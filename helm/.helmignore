@@ -1,0 +1,6 @@
+.helmignore
+.git
+.DS_Store
+*.swp
+*.swo
+*.md
