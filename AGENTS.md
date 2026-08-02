@@ -18,7 +18,7 @@ my-java-app/
 ├── .gitignore                           # target/, .idea/, *.iml, *.swp
 ├── src/main/java/com/example/
 │   ├── Application.java                 # @SpringBootApplication
-│   └── HelloController.java             # GET /hello → "Hello, World!"
+│   └── HelloController.java             # GET /hello → "Hello World v2"
 ├── src/main/resources/
 │   └── application.yml                  # server.port=8080, actuator /health
 ├── docker/
@@ -30,7 +30,10 @@ my-java-app/
 │   ├── helm-validate.sh                 # helm lint + template
 │   ├── k8s-deploy.sh                    # build → docker → kind load → helm install
 │   ├── k8s-test.sh                      # port-forward + curl /hello + /health
-│   └── k8s-clean.sh                     # helm uninstall
+│   ├── k8s-clean.sh                     # helm uninstall
+│   ├── publish-image.sh                 # docker build + tag + push to GHCR
+│   ├── publish-chart.sh                 # helm package + push to GHCR OCI
+│   └── publish-all.sh                   # build → publish-image → publish-chart
 ├── helm/
 │   ├── Chart.yaml
 │   ├── values.yaml
@@ -70,7 +73,10 @@ mvn spring-boot:run
 ../kind/kind-status.sh                   # show cluster info
 ../kind/kind-load-image.sh my-java-app:latest  # load docker image
 
-# Full K8s test cycle (app-specific)
+# GitOps publish (manual, while CI is not pushing)
+./local/publish-all.sh [app-version] [chart-version]
+# Defaults: app-version=1.1.0, chart-version=0.2.0
+# If no version is given, bump the patch version automatically.
 ./local/k8s-deploy.sh                  # build → docker → kind load → helm install
 ./local/k8s-test.sh                    # port-forward + curl /hello + /health
 ./local/k8s-clean.sh                   # helm uninstall
@@ -88,7 +94,7 @@ On CI (GitHub Actions), the Docker job uses `docker/build-push-action` with `typ
 
 ## Endpoints
 
-- `GET /hello` → `"Hello, World!"`
+- `GET /hello` → `"Hello World v2"`
 - `GET /actuator/health` → health check (liveness/readiness probes)
 
 ## Design Decisions
@@ -102,3 +108,4 @@ On CI (GitHub Actions), the Docker job uses `docker/build-push-action` with `typ
 ## Agent Behavior
 
 - When the user asks for **discussion, evaluation, or review**, the agent must first discuss and only make changes after the user explicitly authorizes them.
+- When running `./local/publish-all.sh` without explicit versions, auto-increment the patch version. Read the current `appVersion` from `helm/Chart.yaml` and bump the patch segment (e.g., `1.0.0` → `1.0.1`). Do the same for chart `version` (e.g., `0.1.0` → `0.1.1`).
