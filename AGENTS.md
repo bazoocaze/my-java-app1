@@ -7,6 +7,7 @@
 - **Maven** — build tool
 - **Docker** — multi-stage build with BuildKit cache mounts
 - **Helm v2** — Kubernetes packaging (Deployment + Service ClusterIP, no Ingress, no HPA)
+- **GitHub Actions** — CI pipeline: Maven build, Docker build (with GHA cache), Helm lint
 
 ## Project Structure
 
@@ -27,14 +28,17 @@ my-java-app/
 │   ├── run.sh                           # mvn spring-boot:run
 │   ├── docker.sh                        # docker build + run
 │   └── helm-validate.sh                 # helm lint + template
-└── helm/
-    ├── Chart.yaml
-    ├── values.yaml
-    ├── .helmignore
-    └── templates/
-        ├── _helpers.tpl
-        ├── deployment.yaml              # liveness+readiness via /actuator/health
-        └── service.yaml                 # ClusterIP port 8080
+├── helm/
+│   ├── Chart.yaml
+│   ├── values.yaml
+│   ├── .helmignore
+│   └── templates/
+│       ├── _helpers.tpl
+│       ├── deployment.yaml              # liveness+readiness via /actuator/health
+│       └── service.yaml                 # ClusterIP port 8080
+└── .github/
+    └── workflows/
+        └── ci.yml                       # GHA: Maven build, Docker build (GHA cache), Helm lint
 ```
 
 ## Key Commands
@@ -66,6 +70,8 @@ The Dockerfile uses BuildKit `--mount=type=cache,target=/root/.m2` to persist th
 ```
 --mount=type=cache,id=maven-<project>,target=/root/.m2
 ```
+
+On CI (GitHub Actions), the Docker job uses `docker/build-push-action` with `type=gha` cache backend, which persists both Docker layers and the BuildKit Maven cache across workflow runs.
 
 ## Endpoints
 
