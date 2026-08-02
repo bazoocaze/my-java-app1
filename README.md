@@ -1,5 +1,7 @@
 # my-java-app
 
+[![CI](https://github.com/bazoocaze/my-java-app/actions/workflows/ci.yml/badge.svg)](https://github.com/bazoocaze/my-java-app/actions/workflows/ci.yml)
+
 Simple Spring Boot REST API with Java 21.
 
 ## Quick Start
