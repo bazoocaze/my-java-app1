@@ -79,3 +79,7 @@ The Dockerfile uses BuildKit `--mount=type=cache,target=/root/.m2` to persist th
 - **No HPA** — not needed for local testing
 - **IntelliJ IDEA** — `.idea/` and `*.iml` in `.gitignore`
 - **`<finalName>`** uses `${project.artifactId}` (not the deprecated `${artifactId}`)
+
+## Agent Behavior
+
+- When the user asks for **discussion, evaluation, or review**, the agent must first discuss and only make changes after the user explicitly authorizes them.
