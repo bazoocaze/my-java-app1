@@ -27,7 +27,10 @@ my-java-app/
 │   ├── build.sh                         # mvn clean package
 │   ├── run.sh                           # mvn spring-boot:run
 │   ├── docker.sh                        # docker build + run
-│   └── helm-validate.sh                 # helm lint + template
+│   ├── helm-validate.sh                 # helm lint + template
+│   ├── k8s-deploy.sh                    # build → docker → kind load → helm install
+│   ├── k8s-test.sh                      # port-forward + curl /hello + /health
+│   └── k8s-clean.sh                     # helm uninstall
 ├── helm/
 │   ├── Chart.yaml
 │   ├── values.yaml
@@ -59,8 +62,18 @@ mvn spring-boot:run
 # Helm lint + validate
 ./local/helm-validate.sh
 
-# Helm install (local k8s)
-helm install my-java-app helm/
+# Kind cluster lifecycle (generic scripts in ~/workflows/kubernetes/kind/)
+../kind/kind-create.sh                   # create cluster (idempotent)
+../kind/kind-start.sh                    # start after reboot
+../kind/kind-stop.sh                     # stop cluster
+../kind/kind-delete.sh                   # delete cluster
+../kind/kind-status.sh                   # show cluster info
+../kind/kind-load-image.sh my-java-app:latest  # load docker image
+
+# Full K8s test cycle (app-specific)
+./local/k8s-deploy.sh                  # build → docker → kind load → helm install
+./local/k8s-test.sh                    # port-forward + curl /hello + /health
+./local/k8s-clean.sh                   # helm uninstall
 ```
 
 ## Docker Build Cache
