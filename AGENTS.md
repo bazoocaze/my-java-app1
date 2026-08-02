@@ -25,7 +25,8 @@ my-java-app/
 ├── local/
 │   ├── build.sh                         # mvn clean package
 │   ├── run.sh                           # mvn spring-boot:run
-│   └── docker.sh                        # docker build + run
+│   ├── docker.sh                        # docker build + run
+│   └── helm-validate.sh                 # helm lint + template
 └── helm/
     ├── Chart.yaml
     ├── values.yaml
@@ -51,8 +52,8 @@ my-java-app/
 # Or directly with Maven
 mvn spring-boot:run
 
-# Helm lint
-helm lint helm/
+# Helm lint + validate
+./local/helm-validate.sh
 
 # Helm install (local k8s)
 helm install my-java-app helm/
