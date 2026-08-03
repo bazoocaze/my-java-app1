@@ -108,4 +108,4 @@ On CI (GitHub Actions), the Docker job uses `docker/build-push-action` with `typ
 ## Agent Behavior
 
 - When the user asks for **discussion, evaluation, or review**, the agent must first discuss and only make changes after the user explicitly authorizes them.
-- When running `./local/publish-all.sh` without explicit versions, auto-increment the patch version. Read the current `appVersion` from `helm/Chart.yaml` and bump the patch segment (e.g., `1.0.0` → `1.0.1`). Do the same for chart `version` (e.g., `0.1.0` → `0.1.1`).
+- When running `./local/publish-all.sh` without a version, auto-increment the patch version from `helm/Chart.yaml` (e.g., `1.0.0` → `1.0.1`). The same version is used for both image tag and chart.
