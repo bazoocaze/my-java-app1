@@ -6,7 +6,7 @@
 - **Spring Boot 3.4.4** with `spring-boot-starter-web` + `spring-boot-starter-actuator`
 - **Maven** — build tool
 - **Docker** — multi-stage build with BuildKit cache mounts
-- **Helm v2** — Kubernetes packaging (Deployment + Service ClusterIP, no Ingress, no HPA)
+- **Helm v2** — Kubernetes packaging (Deployment + Service ClusterIP + Ingress, no HPA)
 - **GitHub Actions** — CI pipeline: Maven build, Docker build (with GHA cache), Helm lint
 
 ## Project Structure
@@ -41,6 +41,7 @@ my-java-app/
 │   └── templates/
 │       ├── _helpers.tpl
 │       ├── deployment.yaml              # liveness+readiness via /actuator/health
+│       ├── ingress.yaml                 # Ingress (nginx, controlado por values.ingress.enabled)
 │       └── service.yaml                 # ClusterIP port 8080
 └── .github/
     └── workflows/
@@ -100,7 +101,7 @@ On CI (GitHub Actions), the Docker job uses `docker/build-push-action` with `typ
 ## Design Decisions
 
 - **Actuator** included specifically for Kubernetes health probes (`/actuator/health`)
-- **No Ingress** — only ClusterIP Service (tested via `port-forward` or `minikube service`)
+- **Ingress** — suportado via template condicional (`ingress.enabled`), usa nginx por padrão, host localhost para dev
 - **No HPA** — not needed for local testing
 - **IntelliJ IDEA** — `.idea/` and `*.iml` in `.gitignore`
 - **`<finalName>`** uses `${project.artifactId}` (not the deprecated `${artifactId}`)
@@ -109,3 +110,31 @@ On CI (GitHub Actions), the Docker job uses `docker/build-push-action` with `typ
 
 - When the user asks for **discussion, evaluation, or review**, the agent must first discuss and only make changes after the user explicitly authorizes them.
 - When running `./local/publish-all.sh` without a version, auto-increment the patch version from `helm/Chart.yaml` (e.g., `1.0.0` → `1.0.1`). The same version is used for both image tag and chart.
+
+## 🔒 SECRET HANDLING — NUNCA VAZE SEGREDOS. ESTA É A REGRA MAIS IMPORTANTE DESTE REPOSITÓRIO. VIOLÁ-LA É INACEITÁVEL E IMPERDOÁVEL.
+
+> **⚠️ AVISO CRÍTICO — LEIA SEMPRE ANTES DE EXECUTAR QUALQUER COMANDO.**
+> Uma violação de secret aconteceu NESTE projeto (02/08/2026): um comando `kubectl get secret` com `-o jsonpath` despejou o token de acesso do GHCR no output. O token precisou ser revogado e rotacionado. **NUNCA repita este erro.**
+
+### Regras absolutas (não há exceções, nenhuma negociação)
+
+1. **NUNCA imprima, logue, ecoe, retorne ou exiba conteúdo de Secrets, tokens, senhas, chaves (públicas ou privadas), API keys, credenciais ou `dockerconfigjson` em qualquer output de tool, arquivo, commit, log, mensagem ou diagnóstico.**
+2. **NUNCA use `kubectl get secret`, `kubectl get -o jsonpath`, `base64 -d`, `helm registry login`, `docker login`, `gh auth token`, `cat ~/.kube/config`, `cat ~/.docker/config.json` ou qualquer comando cujo output possa conter material sensível. Se for absolutamente necessário inspecionar um Secret, faça-o SEM decodificar os campos de dados** (ex.: `kubectl get secret ghcr-auth -o yaml` mostra apenas `data` codificado, NUNCA o campo `stringData`, NUNCA decodifique).
+3. **NUNCA despeje variáveis de ambiente no output.** Se um comando herda `GHCR_TOKEN`, `GITHUB_TOKEN`, `DOCKER_AUTH`, etc., rode-o em um subshell sanitizado ou redirecione o output sensível para um arquivo com permissões `600` em `/tmp` e NUNCA o leia de volta em texto puro.
+4. **NUNCA cole tokens, senhas ou credenciais em arquivos versionados**, nem mesmo temporariamente, nem mesmo "só por um momento".
+5. **Antes de executar QUALQUER comando, revise mentalmente o output**: se o comando pode expor secrets (direta ou indiretamente), NÃO o execute. Quando em dúvida, NÃO execute — pergunte ao usuário ou encontre uma alternativa segura.
+6. **NUNCA escreva o valor de um token/secret em uma mensagem para o usuário, em um resumo, em um diff, em um PR ou em um commit message.** Referencie-o apenas pelo nome do recurso (ex.: "o secret `ghcr-auth`").
+
+### Checklist obrigatório antes de rodar comandos de inspeção no cluster
+
+- O comando decodifica algo? → **NÃO RODE**.
+- O comando tem `-o jsonpath`, `-o go-template`, `-o yaml` sobre Secret? → **NÃO RODE** (ou use apenas campos estruturais, nunca `data`/`stringData`).
+- O output pode conter um token regex-like (`gho_`, `ghp_`, `ghs_`, `ghu_`, `AKIA`, `BEGIN ... PRIVATE KEY`, etc.)? → **NÃO RODE**.
+- Se precisar verificar autenticação/credenciais, use comandos que NÃO retornam o segredo (ex.: `docker login` em modo interativo, `gh auth status`, `flux get sources`).
+
+### Se, apesar de tudo, um secret for exposto
+
+1. **AVISE O USUÁRIO IMEDIATAMENTE** e com clareza.
+2. **NÃO continue o trabalho** até o usuário revogar/rotacionar a credencial.
+3. **NUNCA tente "consertar" silenciosamente** reescrevendo o histórico ou o log — o segredo já foi comprometido e precisa ser rotacionado pelo usuário.
+4. Depois de rotacionado, registre o incidente aqui (seção acima) para que o próximo agente aprenda.
