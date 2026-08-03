@@ -7,7 +7,7 @@
 - **Maven** — build tool
 - **Docker** — multi-stage build with BuildKit cache mounts
 - **Helm v2** — Kubernetes packaging (Deployment + Service ClusterIP + Ingress, no HPA)
-- **GitHub Actions** — CI pipeline: Maven build, Docker build (with GHA cache), Helm lint
+- **GitHub Actions** — CI pipeline: Maven build, Docker build (with GHA cache), Helm lint + **publish automático** no push para `main` (imagem + chart no GHCR, versão `1.0.<run_number>`)
 
 ## Project Structure
 
@@ -18,7 +18,7 @@ my-java-app/
 ├── .gitignore                           # target/, .idea/, *.iml, *.swp
 ├── src/main/java/com/example/
 │   ├── Application.java                 # @SpringBootApplication
-│   └── HelloController.java             # GET /hello → "Hello World v2"
+│   └── HelloController.java             # GET /hello → "Hello World v3"
 ├── src/main/resources/
 │   └── application.yml                  # server.port=8080, actuator /health
 ├── docker/
@@ -45,7 +45,7 @@ my-java-app/
 │       └── service.yaml                 # ClusterIP port 8080
 └── .github/
     └── workflows/
-        └── ci.yml                       # GHA: Maven build, Docker build (GHA cache), Helm lint
+        └── ci.yml                       # GHA: Maven build, Docker build (GHA cache), Helm lint, publish (main)
 ```
 
 ## Key Commands
@@ -74,7 +74,9 @@ mvn spring-boot:run
 ../kind/kind-status.sh                   # show cluster info
 ../kind/kind-load-image.sh my-java-app:latest  # load docker image
 
-# GitOps publish (manual, while CI is not pushing)
+# GitOps publish (automático via CI no push para main; local ainda disponível)
+# CI publica imagem+chart com versão 1.0.<run_number>. Depois, bump manual do
+# tag em apps/my-java-app/helm-release.yaml no gitops-config e push.
 ./local/publish-all.sh [app-version] [chart-version]
 # Defaults: app-version=1.1.0, chart-version=0.2.0
 # If no version is given, bump the patch version automatically.
@@ -95,7 +97,7 @@ On CI (GitHub Actions), the Docker job uses `docker/build-push-action` with `typ
 
 ## Endpoints
 
-- `GET /hello` → `"Hello World v2"`
+- `GET /hello` → `"Hello World v3"`
 - `GET /actuator/health` → health check (liveness/readiness probes)
 
 ## Design Decisions
