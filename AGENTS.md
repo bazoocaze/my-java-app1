@@ -116,7 +116,7 @@ Fluxo completo e automático no push para `main`:
 1. **Versão**: `1.0.<github.run_number>` (contador incremental único por workflow/repo — não vem de arquivo nem de consulta ao registry)
 2. **Docker**: build + push `ghcr.io/bazoocaze/my-java-app:<version>`
 3. **Helm**: `helm package --version <version> --app-version <version>` + push OCI `oci://ghcr.io/bazoocaze/charts` (não altera o `Chart.yaml` do repo)
-4. **GitOps**: clona `bazoocaze/gitops-config` via PAT, atualiza `apps/my-java-app/helm-release.yaml` (`spec.values.image.tag`), commit `chore: bump my-java-app to <version> [skip ci]` + push → Flux faz o deploy
+4. **GitOps**: o Flux ImageUpdateAutomation detecta a nova tag no registry e faz bump automático no `gitops-config`
 
 ### Secret `RELEASE_TOKEN` (GitHub Actions)
 
@@ -128,6 +128,7 @@ Fluxo completo e automático no push para `main`:
 
 - When the user asks for **discussion, evaluation, or review**, the agent must first discuss and only make changes after the user explicitly authorizes them.
 - When running `./local/publish-all.sh` without a version, auto-increment the patch version from `helm/Chart.yaml` (e.g., `1.0.0` → `1.0.1`). The same version is used for both image tag and chart.
+- **Sempre usar patch version** (`1.0.x`) em experimentos. Nunca usar minor ou major sem autorização explícita.
 
 ## 🔒 SECRET HANDLING — NUNCA VAZE SEGREDOS. ESTA É A REGRA MAIS IMPORTANTE DESTE REPOSITÓRIO. VIOLÁ-LA É INACEITÁVEL E IMPERDOÁVEL.
 
