@@ -71,16 +71,3 @@ jobs:
           helm package helm/ --version "${{ steps.version.outputs.version }}" \
             --app-version "${{ steps.version.outputs.version }}" -d /tmp
           helm push /tmp/my-java-app-${{ steps.version.outputs.version }}.tgz oci://ghcr.io/bazoocaze/charts
-      - name: Bump image tag in gitops-config
-        env:
-          RELEASE_TOKEN: ${{ secrets.RELEASE_TOKEN }}
-          VERSION: ${{ steps.version.outputs.version }}
-        run: |
-          git clone "https://x-access-token:${RELEASE_TOKEN}@github.com/bazoocaze/gitops-config.git" /tmp/gitops-config
-          cd /tmp/gitops-config
-          git config user.name "CI Release Bot"
-          git config user.email "ci-release@users.noreply.github.com"
-          sed -i "s/^\( *tag:\).*/\1 ${VERSION}/" apps/my-java-app/helm-release.yaml
-          git add apps/my-java-app/helm-release.yaml
-          git commit -m "chore: bump my-java-app to ${VERSION} [skip ci]"
-          git push
