@@ -18,7 +18,7 @@ my-java-app/
 ├── .gitignore                           # target/, .idea/, *.iml, *.swp
 ├── src/main/java/com/example/
 │   ├── Application.java                 # @SpringBootApplication
-│   └── HelloController.java             # GET /hello → "Hello World v4"
+│   └── HelloController.java             # GET /hello → "Hello World v5"
 ├── src/main/resources/
 │   └── application.yml                  # server.port=8080, actuator /health
 ├── docker/
@@ -98,7 +98,7 @@ On CI (GitHub Actions), the Docker job uses `docker/build-push-action` with `typ
 
 ## Endpoints
 
-- `GET /hello` → `"Hello World v4"`
+- `GET /hello` → `"Hello World v5"`
 - `GET /actuator/health` → health check (liveness/readiness probes)
 
 ## Design Decisions
