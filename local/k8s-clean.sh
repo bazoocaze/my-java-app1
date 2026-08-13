@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-APP="my-java-app"
+APP="my-java-app1"
 NAMESPACE="${1:-default}"
 
 echo "==> Uninstalling Helm release '${APP}'..."

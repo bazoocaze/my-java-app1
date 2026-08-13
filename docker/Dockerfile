@@ -10,6 +10,6 @@ RUN --mount=type=cache,target=/root/.m2 mvn clean package -DskipTests -B
 # Stage 2: Runtime
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
-COPY --from=builder /build/target/my-java-app.jar app.jar
+COPY --from=builder /build/target/my-java-app1.jar app.jar
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]

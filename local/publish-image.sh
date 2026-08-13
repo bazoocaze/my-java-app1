@@ -10,7 +10,7 @@ if [ -z "$APP_VERSION" ]; then
   exit 1
 fi
 
-IMAGE="ghcr.io/bazoocaze/my-java-app:${APP_VERSION}"
+IMAGE="ghcr.io/bazoocaze/my-java-app1:${APP_VERSION}"
 
 echo "==> Building Docker image: ${IMAGE}"
 docker build -t "${IMAGE}" -f "${APP_DIR}/docker/Dockerfile" "${APP_DIR}"

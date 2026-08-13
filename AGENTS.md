@@ -1,4 +1,4 @@
-# my-java-app
+# my-java-app1
 
 ## Tech Stack
 
@@ -12,7 +12,7 @@
 ## Project Structure
 
 ```
-my-java-app/
+my-java-app1/
 ├── pom.xml                              # Java 21, Spring Boot 3.4.4
 ├── AGENTS.md                            # this file
 ├── .gitignore                           # target/, .idea/, *.iml, *.swp
@@ -72,11 +72,11 @@ mvn spring-boot:run
 ../kind/kind-stop.sh                     # stop cluster
 ../kind/kind-delete.sh                   # delete cluster
 ../kind/kind-status.sh                   # show cluster info
-../kind/kind-load-image.sh my-java-app:latest  # load docker image
+../kind/kind-load-image.sh my-java-app1:latest  # load docker image
 
 # GitOps publish (100% automático via CI no push para main)
 # CI publica imagem+chart com versão 1.0.<run_number> E faz bump+commit do
-# tag em apps/my-java-app/helm-release.yaml no gitops-config (Flux deploys).
+# tag em apps/my-java-app1/helm-release.yaml no gitops-config (Flux deploys).
 # Scripts locais (publish-all.sh) continuam disponíveis para uso manual.
 ./local/publish-all.sh [app-version] [chart-version]
 # Defaults: app-version=1.1.0, chart-version=0.2.0
@@ -114,14 +114,14 @@ On CI (GitHub Actions), the Docker job uses `docker/build-push-action` with `typ
 Fluxo completo e automático no push para `main`:
 
 1. **Versão**: `1.0.<github.run_number>` (contador incremental único por workflow/repo — não vem de arquivo nem de consulta ao registry)
-2. **Docker**: build + push `ghcr.io/bazoocaze/my-java-app:<version>`
+2. **Docker**: build + push `ghcr.io/bazoocaze/my-java-app1:<version>`
 3. **Helm**: `helm package --version <version> --app-version <version>` + push OCI `oci://ghcr.io/bazoocaze/charts` (não altera o `Chart.yaml` do repo)
 4. **GitOps**: o Flux ImageUpdateAutomation detecta a nova tag no registry e faz bump automático no `gitops-config`
 
 ### Secret `RELEASE_TOKEN` (GitHub Actions)
 
 - **Classic PAT** com escopos `repo` + `write:packages` (recurso de longa duração, rotacionar se expor)
-- **PAT fine-grained NÃO funciona para GHCR** — o GitHub Container Registry exige classic PAT (ou `GITHUB_TOKEN`); e `GITHUB_TOKEN` só publica em pacotes **vinculados ao repositório** (o pacote `ghcr.io/bazoocaze/my-java-app` é user-scoped e foi vinculado ao repo na UI em 03/08/2026)
+- **PAT fine-grained NÃO funciona para GHCR** — o GitHub Container Registry exige classic PAT (ou `GITHUB_TOKEN`); e `GITHUB_TOKEN` só publica em pacotes **vinculados ao repositório** (o pacote `ghcr.io/bazoocaze/my-java-app1` é user-scoped e foi vinculado ao repo na UI em 03/08/2026)
 - Usado para: login do Docker, login do `helm registry`, e clone/push no `gitops-config` (via `https://x-access-token:${RELEASE_TOKEN}@github.com/...`, sem imprimir o token)
 
 ## Agent Behavior

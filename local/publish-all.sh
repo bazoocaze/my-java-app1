@@ -12,7 +12,7 @@ if [ -z "$VERSION" ]; then
   echo "==> No version given. Auto-bumped to ${VERSION}"
 fi
 
-echo "==> Publishing all artifacts for my-java-app"
+echo "==> Publishing all artifacts for my-java-app1"
 echo "    Version: ${VERSION}"
 echo ""
 
@@ -29,7 +29,7 @@ echo "==> Step 3: Packaging and pushing Helm chart..."
 
 echo ""
 echo "==> All artifacts published!"
-echo "    Image: ghcr.io/bazoocaze/my-java-app:${VERSION}"
-echo "    Chart: oci://ghcr.io/bazoocaze/charts/my-java-app:${VERSION}"
+echo "    Image: ghcr.io/bazoocaze/my-java-app1:${VERSION}"
+echo "    Chart: oci://ghcr.io/bazoocaze/charts/my-java-app1:${VERSION}"
 echo ""
 echo "==> Next step: update gitops-config with image tag ${VERSION}"

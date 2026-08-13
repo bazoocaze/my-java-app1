@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "my-java-app.name" . }}
+  name: {{ include "my-java-app1.name" . }}
   labels:
-    {{- include "my-java-app.labels" . | nindent 4 }}
+    {{- include "my-java-app1.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "my-java-app.selectorLabels" . | nindent 6 }}
+      {{- include "my-java-app1.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        {{- include "my-java-app.selectorLabels" . | nindent 8 }}
+        {{- include "my-java-app1.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:

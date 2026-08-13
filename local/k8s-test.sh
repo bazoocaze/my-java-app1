@@ -2,7 +2,7 @@
 set -euo pipefail
 
 NAMESPACE="${1:-default}"
-APP="my-java-app"
+APP="my-java-app1"
 LOCAL_PORT="${2:-8080}"
 
 echo "==> Waiting for deployment to be ready..."

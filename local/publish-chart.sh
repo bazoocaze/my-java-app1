@@ -11,7 +11,7 @@ if [ -z "$VERSION" ]; then
 fi
 
 CHART_DIR="${APP_DIR}/helm"
-CHART_NAME="my-java-app"
+CHART_NAME="my-java-app1"
 
 echo "==> Updating Chart.yaml with version=${VERSION} and appVersion=${VERSION}"
 sed -i "s/^version: .*/version: ${VERSION}/" "${CHART_DIR}/Chart.yaml"
